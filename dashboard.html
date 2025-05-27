@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRYSIS Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #2c2f33;
+            color: #ffffff;
+        }
+        .navbar {
+            background-color: #23272a;
+        }
+        .card {
+            background-color: #23272a;
+            margin-bottom: 1rem;
+        }
+        .btn-download {
+            background-color: #7289da;
+            color: white;
+        }
+        .btn-download:hover {
+            background-color: #5b6eae;
+            color: white;
+        }
+        .user-info {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">KRYSIS Downloads</a>
+            <div class="d-flex align-items-center">
+                <span class="user-info me-3">
+                    <img id="userAvatar" src="" alt="Avatar" class="rounded-circle me-2" style="width: 32px; height: 32px;">
+                    <span id="username"></span>
+                </span>
+                <button onclick="logout()" class="btn btn-outline-light">Abmelden</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">KRYSIS Hauptprogramm</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="menuFiles">
+                            <!-- Wird dynamisch gefüllt -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Triggerbot</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="triggerFiles">
+                            <!-- Wird dynamisch gefüllt -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Prüfe ob der Benutzer eingeloggt ist
+        function checkAuth() {
+            const token = localStorage.getItem('discord_token');
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+            // Lade Benutzerinformationen
+            fetch('https://discord.com/api/users/@me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(user => {
+                document.getElementById('username').textContent = user.username;
+                document.getElementById('userAvatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+            })
+            .catch(() => {
+                localStorage.removeItem('discord_token');
+                window.location.href = 'index.html';
+            });
+        }
+
+        // Abmelden
+        function logout() {
+            localStorage.removeItem('discord_token');
+            window.location.href = 'index.html';
+        }
+
+        // Beim Laden der Seite
+        checkAuth();
+    </script>
+</body>
+</html> 
